@@ -359,7 +359,7 @@ public class FitTSSFixer extends JApplet {
     	checkAndReadFile();
 		Decode decode = new Decode();
 		MesgBroadcaster mesgBroadcaster = new MesgBroadcaster(decode);
-		ListenerDecodeHRZones listenerBuildZones = new ListenerDecodeHRZones();
+		ListenerDecodeHRZones listenerBuildZones = new ListenerDecodeHRZones(hrZones);
 		mesgBroadcaster.addListener((MesgListener) listenerBuildZones);
 		decodeFile(mesgBroadcaster);
     }
