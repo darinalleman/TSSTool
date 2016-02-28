@@ -160,11 +160,10 @@ public class FitTSSFixer extends JApplet {
     				inputFile = fc.getSelectedFile();
         			txtImport.setText(inputFile.getName());
         			checkAndReadFile();
+        			calculateTSSFromHR();
         			findElapsedTime();
     			}
-    			
     		}
-
     	});
     	
     	bFix.addActionListener(new ActionListener(){
@@ -357,11 +356,18 @@ public class FitTSSFixer extends JApplet {
     private void calculateTSSFromHR()
     {
     	checkAndReadFile();
+    	
 		Decode decode = new Decode();
 		MesgBroadcaster mesgBroadcaster = new MesgBroadcaster(decode);
-		ListenerDecodeHRZones listenerBuildZones = new ListenerDecodeHRZones(hrZones);
-		mesgBroadcaster.addListener((MesgListener) listenerBuildZones);
+		HeartRateLogger hrLogger = new HeartRateLogger();
+		TrainingStressScoreCalculator calculator = new TrainingStressScoreCalculator(hrLogger);
+		HeartRateMessageListener hrMessageListener = new HeartRateMessageListener(hrLogger);
+		
+		mesgBroadcaster.addListener(hrMessageListener);
+		
 		decodeFile(mesgBroadcaster);
+		
+		System.out.println("tss: " + calculator.calculateScore());
     }
 	private void findElapsedTime() 
 	{
@@ -464,15 +470,16 @@ private static void closeIO() {
 private static void decodeFile(MesgBroadcaster mesgBroadcaster) {
 	try {
          mesgBroadcaster.run(inputStream);
-      } catch (FitRuntimeException e) {
-         System.err.print("Exception decoding file: ");
-         System.err.println(e.getMessage());
-         try {
+    } 
+	catch (FitRuntimeException e) {
+		System.err.print("Exception decoding file: ");
+        System.err.println(e.getMessage());
+        try {
             inputStream.close();
-         } catch (java.io.IOException f) {
-            throw new RuntimeException(f);
-         }
-      }
+        } catch (java.io.IOException f) {
+        	throw new RuntimeException(f);
+        }
+	}
 }
 private static void checkAndReadFile() {
 	try {
@@ -518,5 +525,5 @@ private static void checkFileType(FileInputStream in) {
             throw new RuntimeException(e);
          }
       }
-}
+	}
 }
