@@ -19,11 +19,6 @@ package src;
 
 import com.garmin.fit.*;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,23 +26,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Paths;
-import java.util.Calendar;
 import java.util.Properties;
 
 import javax.swing.JApplet;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class FitTSSFixer extends JApplet {
 	//TODO: clean this all up for information hiding
@@ -61,7 +42,6 @@ public class FitTSSFixer extends JApplet {
     public static int[] hrZones;
     public static int estimatedTSS;
     public static int FTP;
-    private JTextField tssInput;
     public static Properties prop;
     static OutputStream configOutput;
     
