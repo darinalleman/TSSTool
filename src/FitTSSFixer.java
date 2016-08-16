@@ -74,69 +74,11 @@ public class FitTSSFixer extends JApplet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//    	bImport.addActionListener(new ActionListener(){
-//    		@Override
-//    		public void actionPerformed(ActionEvent e)
-//    		{
-//    			final JFileChooser fc = new JFileChooser();
-//    			fc.setCurrentDirectory(new File("."));
-//    			fc.setDialogTitle("Select your .fit file to edit");
-//    			FileFilter fitFilter = new FileNameExtensionFilter("FIT File","fit");
-//    			fc.setFileFilter(fitFilter);
-//    			fc.showOpenDialog(bImport);
-//    			if (fc.getSelectedFile() != null)
-//    			{
-//    				inputFile = fc.getSelectedFile();
-//        			txtImport.setText(inputFile.getName());
-//        			checkAndReadFile();
-//        			calculateTSSFromHR();
-//        			findElapsedTime();
-//    			}
-//    		}
-//    	});
-//    	
-//    	bFix.addActionListener(new ActionListener(){
-//    		@Override
-//    		public void actionPerformed(ActionEvent e)
-//    		{
-//    			int tss = 0;
-//    			int ftp = 0;
-//    			try {
-//    				tss =  Integer.valueOf(tssInput.getText());
-//    				ftp = Integer.valueOf(ftpInput.getText());
-//    			} catch (java.lang.NumberFormatException nfe)
-//    			{
-//    				JOptionPane.showMessageDialog(frame,"TSS and FTP must be non-zero integer values");
-//    			}
-//    			if (tss > 0 && ftp > 0)
-//    			{
-//    				averagePower = (int) (Math.sqrt(ftp*ftp*tss*36/totalMovingTime));
-//    			}
-//    			try {
-//					inputStream.close();
-//				} catch (IOException e1) {
-//				}
-//    			checkAndReadFile();
-//    			writeDataToOutput();
-//    			
-//    		}
-//
-//    	});
-//    	bSetZones.addActionListener(new ActionListener(){
-//    		@Override
-//    		public void actionPerformed(ActionEvent e)
-//    		{    				
-//    				double tss = calculateTSSFromHR();
-//    				tssInput.setText(Double.toString(tss));
-//    				tssInput.setEditable(false);
-//    				tssLabel.setText("TSS");
-//
-//    		}
-//    		});
     }
     
     public double calculateTSSFromHR()
     {
+    	
     	checkAndReadFile();
     	
 		Decode decode = new Decode();
