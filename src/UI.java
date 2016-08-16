@@ -20,8 +20,6 @@ import javax.swing.JPanel;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
-import javax.swing.JTextArea;
-
 import java.awt.Insets;
 
 import javax.swing.JTextPane;
@@ -31,6 +29,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.Dimension;
 import java.io.File;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
+import java.awt.Component;
 
 public class UI {
 
@@ -168,6 +168,7 @@ public class UI {
 		gbc_btnCompute.gridx = 0;
 		gbc_btnCompute.gridy = 4;
 		panel.add(btnCompute, gbc_btnCompute);
+		frame.getContentPane().setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{btnEstimateViaHr, txtPnInfo, lblTSS, txtTSS, txtPower, lblPower, btnCompute, txtImport}));
 		
     	btnImport.addActionListener(new ActionListener(){
     		@Override
@@ -184,6 +185,8 @@ public class UI {
     				File inputFile = fc.getSelectedFile();
     				app.fileSelected(inputFile);
         			txtImport.setText(inputFile.getName());
+        			txtTSS.setText("");
+        			txtPower.setText("");
     			}
     		}
     	});
@@ -211,8 +214,19 @@ public class UI {
     			//if there is nothing in TSS and nothing in power
     			else if(!txtPower.getText().isEmpty() && txtTSS.getText().isEmpty())
     			{
+    				//just add a power value to the entire ride file
     				app.addPower(txtPower.getText());
     				JOptionPane.showMessageDialog(frame,"Finished! File is located in the same directory as the jar you ran.");
+    			}
+    			//if both fields have values...
+    			else if (!txtPower.getText().isEmpty() && !txtTSS.getText().isEmpty()){
+    				JOptionPane.showMessageDialog(frame,"You gave both a TSS and a Power - I'll assume you want the power in there.");
+    				app.addPower(txtPower.getText());
+    				JOptionPane.showMessageDialog(frame,"Finished! File is located in the same directory as the jar you ran.");
+    			}
+    			//if no fields have values
+    			else if (txtPower.getText().isEmpty() && txtTSS.getText().isEmpty()){
+    				JOptionPane.showMessageDialog(frame,"Try putting in a power value or an estimated TSS value..");
     			}
     		
     		}
