@@ -1,3 +1,4 @@
+package src;
 ////////////////////////////////////////////////////////////////////////////////
 // The following FIT Protocol software provided may be used with FIT protocol
 // devices only and remains the copyrighted property of Dynastream Innovations Inc.
@@ -59,301 +60,82 @@ public class FitTSSFixer extends JApplet {
     public static int totalMovingTime;
     public static int[] hrZones;
     public static int estimatedTSS;
+    public static int FTP;
     private JTextField tssInput;
     public static Properties prop;
     static OutputStream configOutput;
     
     public FitTSSFixer()
-    {
-    	//TODO: extract methods for the GUI stuff
-    	JFrame frame = new JFrame("Fit TSS Fixer");
-    	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    	GridBagLayout gbl = new GridBagLayout();
-    	GridBagConstraints c = new GridBagConstraints();
-    	c.ipadx = 20;
-    	frame.getContentPane().setLayout(gbl);
-    	
-    	JButton bImport = new JButton("Import your .fit file");
-    	JTextField txtImport = new JTextField(16);
-    	txtImport.setHorizontalAlignment(SwingConstants.LEFT);
-    	txtImport.setEditable(false);
-    	
-    	c.gridx = 0;
-    	c.gridy = 0;
-    	frame.getContentPane().add(bImport,c);
-    	GridBagConstraints c1 = new GridBagConstraints();
-
-    	c1.gridx = 1;
-    	c1.gridy = 0;
-		c1.fill = GridBagConstraints.HORIZONTAL;
-		c1.gridwidth = 3;
-    	frame.getContentPane().add(txtImport,c1);
-    	
-    	
-//    	JLabel tssLabel = new JLabel("Or enter estimated TSS");
-//    	tssLabel.setHorizontalAlignment(SwingConstants.CENTER);
-//    	tssInput = new JTextField(16);
-//    	tssInput.setHorizontalAlignment(SwingConstants.LEFT);
-//    	GridBagConstraints c2 = new GridBagConstraints();
+    {   	
+		PropertiesReader pr = new PropertiesReader();
+		try {
+			pr.getPropValues();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//    	bImport.addActionListener(new ActionListener(){
+//    		@Override
+//    		public void actionPerformed(ActionEvent e)
+//    		{
+//    			final JFileChooser fc = new JFileChooser();
+//    			fc.setCurrentDirectory(new File("."));
+//    			fc.setDialogTitle("Select your .fit file to edit");
+//    			FileFilter fitFilter = new FileNameExtensionFilter("FIT File","fit");
+//    			fc.setFileFilter(fitFilter);
+//    			fc.showOpenDialog(bImport);
+//    			if (fc.getSelectedFile() != null)
+//    			{
+//    				inputFile = fc.getSelectedFile();
+//        			txtImport.setText(inputFile.getName());
+//        			checkAndReadFile();
+//        			calculateTSSFromHR();
+//        			findElapsedTime();
+//    			}
+//    		}
+//    	});
+//    	
+//    	bFix.addActionListener(new ActionListener(){
+//    		@Override
+//    		public void actionPerformed(ActionEvent e)
+//    		{
+//    			int tss = 0;
+//    			int ftp = 0;
+//    			try {
+//    				tss =  Integer.valueOf(tssInput.getText());
+//    				ftp = Integer.valueOf(ftpInput.getText());
+//    			} catch (java.lang.NumberFormatException nfe)
+//    			{
+//    				JOptionPane.showMessageDialog(frame,"TSS and FTP must be non-zero integer values");
+//    			}
+//    			if (tss > 0 && ftp > 0)
+//    			{
+//    				averagePower = (int) (Math.sqrt(ftp*ftp*tss*36/totalMovingTime));
+//    			}
+//    			try {
+//					inputStream.close();
+//				} catch (IOException e1) {
+//				}
+//    			checkAndReadFile();
+//    			writeDataToOutput();
+//    			
+//    		}
 //
-//    	c2.gridy = 2;
-//    	c2.gridx = 0;
-//    	frame.getContentPane().add(tssLabel,c2);
-    	GridBagConstraints c3 = new GridBagConstraints();
-
-    	c3.gridx = 1;
-    	c3.gridy = 2;
-    	//frame.getContentPane().add(tssInput,c3);
-    	
-    	JLabel estimateTSSLabel = new JLabel("Use your HR to estimate TSS");
-    	estimateTSSLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    	JButton bSetZones = new JButton("Set HR Zones and FTP");
-    	GridBagConstraints c4 = new GridBagConstraints();
-
-    	c4.gridy = 1;
-    	c4.gridx = 0;
-    	frame.getContentPane().add(estimateTSSLabel,c4);
-    	GridBagConstraints c5 = new GridBagConstraints();
-    	c5.gridy = 1;
-    	c5.gridx = 1;
-    	c5.fill = 1;
-    	frame.getContentPane().add(bSetZones, c5);
-    	
-    	JLabel ftpLabel = new JLabel("Enter FTP");
-    	ftpLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    	JTextField ftpInput = new JTextField(16);
-    	ftpInput.setHorizontalAlignment(SwingConstants.LEFT);
-    	GridBagConstraints c6 = new GridBagConstraints();
-
-    	c6.gridy = 3;
-    	c6.gridx = 0;
-    	frame.getContentPane().add(ftpLabel,c6);
-    	GridBagConstraints c7 = new GridBagConstraints();
-    	c7.gridy = 3;
-    	c7.gridx = 1;
-    	frame.getContentPane().add(ftpInput,c7);
-    	
-    	JButton bFix = new JButton("Add Power Field with Average Power");
-    	GridBagConstraints c8 = new GridBagConstraints();
-    	c8.gridy = 4;
-    	c8.gridwidth = 2;
-    	c8.gridx = 0;
-    	c8.fill = 1;
-    	frame.getContentPane().add(bFix,c8);
-    	c.fill = 0;
-    	frame.pack();
-    	frame.setVisible(true);
-    	
-    	
-    	bImport.addActionListener(new ActionListener(){
-    		@Override
-    		public void actionPerformed(ActionEvent e)
-    		{
-    			final JFileChooser fc = new JFileChooser();
-    			fc.setCurrentDirectory(new File("."));
-    			fc.setDialogTitle("Select your .fit file to edit");
-    			FileFilter fitFilter = new FileNameExtensionFilter("FIT File","fit");
-    			fc.setFileFilter(fitFilter);
-    			fc.showOpenDialog(bImport);
-    			if (fc.getSelectedFile() != null)
-    			{
-    				inputFile = fc.getSelectedFile();
-        			txtImport.setText(inputFile.getName());
-        			checkAndReadFile();
-        			calculateTSSFromHR();
-        			findElapsedTime();
-    			}
-    		}
-    	});
-    	
-    	bFix.addActionListener(new ActionListener(){
-    		@Override
-    		public void actionPerformed(ActionEvent e)
-    		{
-    			int tss = 0;
-    			int ftp = 0;
-    			try {
-    				tss =  Integer.valueOf(tssInput.getText());
-    				ftp = Integer.valueOf(ftpInput.getText());
-    			} catch (java.lang.NumberFormatException nfe)
-    			{
-    				JOptionPane.showMessageDialog(frame,"TSS and FTP must be non-zero integer values");
-    			}
-    			if (tss > 0 && ftp > 0)
-    			{
-    				averagePower = (int) (Math.sqrt(ftp*ftp*tss*36/totalMovingTime));
-    			}
-    			try {
-					inputStream.close();
-				} catch (IOException e1) {
-				}
-    			checkAndReadFile();
-    			writeDataToOutput();
-    			JOptionPane.showMessageDialog(frame,"Finished! File is located in the same directory as the jar you ran.");
-    		}
-
-    	});
-    	bSetZones.addActionListener(new ActionListener(){
-    		@Override
-    		public void actionPerformed(ActionEvent e)
-    		{
-    			//parse zones from the config file
-    			if (!prop.getProperty("zonessetup").equals("false"))
-    			{
-    				hrZones = new int[5];
-    				hrZones[0] = Integer.parseInt(prop.getProperty("zone1"));
-    				hrZones[1] = Integer.parseInt(prop.getProperty("zone2"));
-    				hrZones[2] = Integer.parseInt(prop.getProperty("zone3"));
-    				hrZones[3] = Integer.parseInt(prop.getProperty("zone4"));
-    				hrZones[4] = Integer.parseInt(prop.getProperty("zone5"));
-    				
-    				calculateTSSFromHR();
-
-    				tssInput.setText(Integer.toString(estimatedTSS));
-    				tssInput.setEditable(false);
-    				//tssLabel.setText("TSS");
-    				ftpLabel.setText("FTP");
-    				ftpInput.setText(prop.getProperty("ftp"));
-    				ftpInput.setEditable(false);
-    				
-    			}
-    			else{
-        	    	setZones(); 				
-    			}
-
-    		}
-
-			private void setZones() {
-				GridBagLayout layout = new GridBagLayout();
-    	    	GridBagConstraints c = new GridBagConstraints();
-    			JFrame hrDialog = new JFrame("Enter your heart rate zones");
-    			hrDialog.getContentPane().setLayout(layout);
-
-    			JLabel lblZone1 = new JLabel("Zone 1");
-    			c.gridx = 0;
-    			c.gridy = 0;
-    			hrDialog.getContentPane().add(lblZone1,c);
-    			JTextField txtZone1 = new JTextField(8);
-    			c.gridy++;
-    			hrDialog.getContentPane().add(txtZone1, c);
-    			
-    			JLabel lblZone2 = new JLabel("Zone 2");
-    			c.gridx++;
-    			c.gridy--;
-    			hrDialog.getContentPane().add(lblZone2,c);
-    			JTextField txtZone2 = new JTextField(8);
-    			c.gridy++;
-    			hrDialog.getContentPane().add(txtZone2, c);
-    			
-    			JLabel lblZone3 = new JLabel("Zone 3");
-    			c.gridx++;
-    			c.gridy--;
-    			hrDialog.getContentPane().add(lblZone3,c);
-    			JTextField txtZone3 = new JTextField(8);
-    			c.gridy++;
-    			hrDialog.getContentPane().add(txtZone3, c);
-    			
-    			JLabel lblZone4 = new JLabel("Zone 4");
-    			c.gridx++;
-    			c.gridy--;
-    			hrDialog.getContentPane().add(lblZone4,c);
-    			JTextField txtZone4 = new JTextField(8);
-    			c.gridy++;
-    			hrDialog.getContentPane().add(txtZone4, c);
-    			
-    			JLabel lblZone5 = new JLabel("Zone 5");
-    			c.gridx++;
-    			c.gridy--;
-    			hrDialog.getContentPane().add(lblZone5,c);
-    			JTextField txtZone5 = new JTextField(8);
-    			c.gridy++;
-    			hrDialog.getContentPane().add(txtZone5, c);
-    			
-    			JLabel lblFTP = new JLabel("FTP");
-    			c.gridx++;
-    			c.gridy--;
-    			hrDialog.getContentPane().add(lblFTP,c);
-    			JTextField txtFTP = new JTextField(8);
-    			c.gridy++;
-    			hrDialog.getContentPane().add(txtFTP, c);
-    			
-    			JButton bFinish = new JButton("Save Zones");
-    			c.gridx = 0;
-    			c.gridy++;
-    			c.fill = GridBagConstraints.HORIZONTAL;
-    			c.gridwidth = 5;
-    			hrDialog.getContentPane().add(bFinish, c);
-    			
-    			JLabel lblInfo = new JLabel("<html><center>Enter the end of each zone below the zone label. <br>For example, "
-    					+ "the end of zone 1 (start of zone 2) should go in the first box. <br>Your max HR should go in the last box."
-    					+ "<center></html>", SwingConstants.CENTER);
-    			c.gridx = 0;
-    			c.gridy++;
-    			c.fill = GridBagConstraints.HORIZONTAL;
-    			c.gridwidth = 5;
-    			hrDialog.getContentPane().add(lblInfo,c);
-
-    			hrDialog.pack();
-    			hrDialog.setVisible(true);
-    			
-    			bFinish.addActionListener(new ActionListener(){
-    	    		@Override
-    	    		public void actionPerformed(ActionEvent e)
-    	    		{
-    	    			//make sure all inputs are valid...
-    	    			if (Integer.valueOf(txtZone1.getText()) != null &&
-    	    					Integer.valueOf(txtZone2.getText()) != null &&
-    	    							Integer.valueOf(txtZone3.getText()) != null &&
-    	    									Integer.valueOf(txtZone4.getText()) != null &&
-    	    											Integer.valueOf(txtZone5.getText()) != null)
-    	    			{
-    	    				hrZones = new int[5];
-    	    				hrZones[0] = Integer.valueOf(txtZone1.getText());
-    	    				prop.setProperty("zone1", txtZone1.getText());
-    	    				hrZones[1] = Integer.valueOf(txtZone2.getText());
-    	    				prop.setProperty("zone2", txtZone2.getText());
-    	    				hrZones[2] = Integer.valueOf(txtZone3.getText());
-    	    				prop.setProperty("zone3", txtZone3.getText());
-    	    				hrZones[3] = Integer.valueOf(txtZone4.getText());
-    	    				prop.setProperty("zone4", txtZone4.getText());
-    	    				hrZones[4] = Integer.valueOf(txtZone5.getText());
-    	    				prop.setProperty("zone5", txtZone5.getText());
-    	    				prop.setProperty("zone5", txtFTP.getText());
-    	    				prop.setProperty("zonessetup", "true");
-    	    				try {
-    	    					configOutput = new FileOutputStream("config.properties");
-								prop.store(configOutput, null);
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							} finally {
-								if (configOutput != null) {
-									try {
-										configOutput.close();
-									} catch (IOException e2) {
-										e2.printStackTrace();
-									}
-								}
-							}
-    	    				    	    				
-    	    				calculateTSSFromHR();
-
-    	    				tssInput.setText(Integer.toString(estimatedTSS));
-    	    				tssInput.setEditable(false);
-    	    				hrDialog.dispose();
-    	    				//tssLabel.setText("TSS");
-    	    				ftpLabel.setText("FTP");
-    	    				ftpInput.setText(txtFTP.getText());
-    	    			}
-    	    			else{
-    	    				
-    	    			}
-    	    		}
-    			});
-			}
-    	});
+//    	});
+//    	bSetZones.addActionListener(new ActionListener(){
+//    		@Override
+//    		public void actionPerformed(ActionEvent e)
+//    		{    				
+//    				double tss = calculateTSSFromHR();
+//    				tssInput.setText(Double.toString(tss));
+//    				tssInput.setEditable(false);
+//    				tssLabel.setText("TSS");
+//
+//    		}
+//    		});
     }
     
-    private void calculateTSSFromHR()
+    public double calculateTSSFromHR()
     {
     	checkAndReadFile();
     	
@@ -366,8 +148,9 @@ public class FitTSSFixer extends JApplet {
 		mesgBroadcaster.addListener(hrMessageListener);
 		
 		decodeFile(mesgBroadcaster);
-		
-		System.out.println("tss: " + calculator.calculateScore());
+		estimatedTSS = (int) calculator.calculateScore();
+		System.out.println("tss: " + estimatedTSS);
+		return estimatedTSS;
     }
 	private void findElapsedTime() 
 	{
@@ -389,65 +172,8 @@ public class FitTSSFixer extends JApplet {
 	    closeIO();
 	}
 
-public static void main(String[] args) {
-		new FitTSSFixer().setVisible(true);
-      
-		prop = new Properties();
-		configOutput = null;
-		InputStream input = null;
-		File config = new File("config.properties");
-		//if the config file doesn't exist yet, build it
-		if (!config.exists())
-		{
-			try {
-	
-				configOutput = new FileOutputStream("config.properties");
-	
-				// set the properties value
-				prop.setProperty("zonessetup", "false");
-				prop.setProperty("zone1", "");
-				prop.setProperty("zone2", "");
-				prop.setProperty("zone3", "");
-				prop.setProperty("zone4", "");
-				prop.setProperty("zone5", "");
-				prop.setProperty("ftp", "");
-	
-				// save properties to project root folder
-				prop.store(configOutput, null);
-	
-			} catch (IOException io) {
-				io.printStackTrace();
-			} finally {
-				if (configOutput != null) {
-					try {
-						configOutput.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-	
-			}
-		}
-		//if it does exist, just load it
-		else{
-			try {
-				input = new FileInputStream("config.properties");
+public static void main(String[] args) throws IOException {
 
-				// load the properties file
-				prop.load(input);
-
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			} finally {
-				if (input != null) {
-					try {
-						input.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
    }
 
 private static void closeIO() {
@@ -525,5 +251,36 @@ private static void checkFileType(FileInputStream in) {
             throw new RuntimeException(e);
          }
       }
+}	
+
+public void fileSelected(File inputFile) 
+{
+	FitTSSFixer.inputFile = inputFile;
+	checkAndReadFile();
+	findElapsedTime();
+}
+
+public double calculatePowerFromTSS(String TSS) {
+	findElapsedTime();
+	double dblTSS = Double.parseDouble(TSS);
+	averagePower = (int) (Math.sqrt(FTP*FTP*dblTSS*36/totalMovingTime));
+	try {
+		inputStream.close();
+	} catch (IOException e) {
+		e.printStackTrace();
 	}
+	checkAndReadFile();
+	writeDataToOutput();
+	System.out.println(averagePower);
+	return averagePower;
+}
+
+public void addPower(String power) {
+	averagePower = Integer.parseInt(power);
+	checkAndReadFile();
+	writeDataToOutput();
+
+}
+
+
 }

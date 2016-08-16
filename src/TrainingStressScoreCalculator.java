@@ -1,3 +1,4 @@
+package src;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.OptionalInt;
@@ -5,7 +6,7 @@ import java.util.stream.IntStream;
 
 public class TrainingStressScoreCalculator {
 	private ArrayList<Integer> heartRates;
-	private int[] heartRateZones = {162, 176, 188, 200, 215};
+	private int[] heartRateZones = FitTSSFixer.hrZones;
 	private int[] timeInZones;
 	private int[] zoneEnds;
 	private double trainingStressScore;
@@ -40,7 +41,6 @@ public class TrainingStressScoreCalculator {
 		trainingStressScore += timeInZones[7] * (100.0 / 3600);
 		trainingStressScore += timeInZones[8] * (120.0 / 3600);
 		trainingStressScore += timeInZones[9] * (140.0 / 3600);
-		
 		return trainingStressScore;
 	}
 	
@@ -50,7 +50,7 @@ public class TrainingStressScoreCalculator {
 	 * @param heartRate - the heartRate that will be assigned to a zone.
 	 */
 	private void assignHeartRateZone(int heartRate) {
-		System.out.println("heartRate: " + heartRate);
+		//System.out.println("heartRate: " + heartRate);
 		// this will find the first value in the zoneEnds array
 		// that is greater than or equal to the heartRate.
 		OptionalInt boundary = Arrays.stream(zoneEnds)
@@ -59,7 +59,7 @@ public class TrainingStressScoreCalculator {
 		
 		//if a value was found...
 		if(boundary.isPresent()){
-			System.out.println("assignHeartRateZone: " + boundary.getAsInt());
+			//System.out.println("assignHeartRateZone: " + boundary.getAsInt());
 			// find the index in the zoneEnds array
 			// of the boundary value found from the 
 			// the above stream.
@@ -77,6 +77,7 @@ public class TrainingStressScoreCalculator {
 	 * Set the end of each heart rate zone as the chart indicates
 	 */
 	private void buildHeartRateZones() {
+		System.out.println(heartRateZones[0]);
 		zoneEnds[0] = heartRateZones[0] - 40;
 		zoneEnds[1] = heartRateZones[0] - 10;
 		zoneEnds[2] = heartRateZones[0];
