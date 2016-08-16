@@ -11,11 +11,9 @@ public class ListenerEncodePower implements MesgListener {
 		   POWER (7, "power"),
 		   HEARTRATE (3, "heart_rate");
 		   private final int fieldNum;
-		   private final String fieldName;
 		   Fields(int fieldNum, String fieldName)
 		   {
 			   this.fieldNum = fieldNum;
-			   this.fieldName = fieldName;
 		   }
 	   }
 	@Override
