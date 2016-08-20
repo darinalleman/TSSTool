@@ -50,7 +50,6 @@ public class TrainingStressScoreCalculator {
 	 * @param heartRate - the heartRate that will be assigned to a zone.
 	 */
 	private void assignHeartRateZone(int heartRate) {
-		//System.out.println("heartRate: " + heartRate);
 		// this will find the first value in the zoneEnds array
 		// that is greater than or equal to the heartRate.
 		OptionalInt boundary = Arrays.stream(zoneEnds)
@@ -59,7 +58,6 @@ public class TrainingStressScoreCalculator {
 		
 		//if a value was found...
 		if(boundary.isPresent()){
-			//System.out.println("assignHeartRateZone: " + boundary.getAsInt());
 			// find the index in the zoneEnds array
 			// of the boundary value found from the 
 			// the above stream.
