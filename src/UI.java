@@ -194,8 +194,7 @@ public class UI {
     		@Override
     		public void actionPerformed(ActionEvent e)
     		{
-    			double tss = app.calculateTSSFromHR();
-    			txtTSS.setText(tss + "");
+    			txtTSS.setText(app.calculateTSSFromHR() + "");
     			txtPower.setEnabled(false);
     		}
     	});
@@ -207,11 +206,10 @@ public class UI {
     			if (txtPower.getText().isEmpty() && !txtTSS.getText().isEmpty())
     			{
     				//Calculate the average power, and send that back to the main
-    				double power = app.calculatePowerFromTSS(txtTSS.getText());
-    				txtPower.setText(power + "");
+    				txtPower.setText(app.calculatePowerFromTSS(txtTSS.getText()) + "");
     				JOptionPane.showMessageDialog(frame,"Finished! File is located in the same directory as the jar you ran.");
     			}
-    			//if there is nothing in TSS and nothing in power
+    			//if there is nothing in TSS and something in power
     			else if(!txtPower.getText().isEmpty() && txtTSS.getText().isEmpty())
     			{
     				//just add a power value to the entire ride file
@@ -224,7 +222,7 @@ public class UI {
     				app.addPower(txtPower.getText());
     				JOptionPane.showMessageDialog(frame,"Finished! File is located in the same directory as the jar you ran.");
     			}
-    			//if no fields have values
+    			//if no fields have values...
     			else if (txtPower.getText().isEmpty() && txtTSS.getText().isEmpty()){
     				JOptionPane.showMessageDialog(frame,"Try putting in a power value or an estimated TSS value..");
     			}
