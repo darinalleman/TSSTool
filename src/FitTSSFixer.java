@@ -40,7 +40,6 @@ public class FitTSSFixer extends JApplet {
     public static int averagePower;
     public static int totalMovingTime;
     public static int[] hrZones;
-    public static int estimatedTSS;
     public static int FTP;
     public static Properties prop;
     static OutputStream configOutput;
@@ -51,26 +50,25 @@ public class FitTSSFixer extends JApplet {
 		try {
 			pr.getPropValues();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
     
     public double calculateTSSFromHR()
     {
-    	
     	checkAndReadFile();
     	
 		Decode decode = new Decode();
 		MesgBroadcaster mesgBroadcaster = new MesgBroadcaster(decode);
 		HeartRateLogger hrLogger = new HeartRateLogger();
+		
 		TrainingStressScoreCalculator calculator = new TrainingStressScoreCalculator(hrLogger);
 		HeartRateMessageListener hrMessageListener = new HeartRateMessageListener(hrLogger);
-		
 		mesgBroadcaster.addListener(hrMessageListener);
 		
 		decodeFile(mesgBroadcaster);
-		estimatedTSS = (int) calculator.calculateScore();
+		
+		int estimatedTSS = (int) calculator.calculateScore();
 		System.out.println("tss: " + estimatedTSS);
 		return estimatedTSS;
     }
@@ -81,6 +79,35 @@ public class FitTSSFixer extends JApplet {
 		ListenerDecodeElapsedTime listenerGetSeconds = new ListenerDecodeElapsedTime();
 		mesgBroadcaster.addListener((MesgListener) listenerGetSeconds);
 		decodeFile(mesgBroadcaster);
+	}
+	
+	public void fileSelected(File inputFile) 
+	{
+		FitTSSFixer.inputFile = inputFile;
+		checkAndReadFile();
+		findElapsedTime();
+	}
+
+	public double calculatePowerFromTSS(String TSS) {
+		findElapsedTime();
+		double dblTSS = Double.parseDouble(TSS);
+		averagePower = (int) (Math.sqrt(FTP*FTP*dblTSS*36/totalMovingTime));
+		try {
+			inputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		checkAndReadFile();
+		writeDataToOutput();
+		System.out.println(averagePower);
+		return averagePower;
+	}
+
+	public void addPower(String power) {
+		averagePower = Integer.parseInt(power);
+		checkAndReadFile();
+		writeDataToOutput();
+
 	}
 
 	private void writeDataToOutput() 
@@ -175,34 +202,7 @@ private static void checkFileType(FileInputStream in) {
       }
 }	
 
-public void fileSelected(File inputFile) 
-{
-	FitTSSFixer.inputFile = inputFile;
-	checkAndReadFile();
-	findElapsedTime();
-}
 
-public double calculatePowerFromTSS(String TSS) {
-	findElapsedTime();
-	double dblTSS = Double.parseDouble(TSS);
-	averagePower = (int) (Math.sqrt(FTP*FTP*dblTSS*36/totalMovingTime));
-	try {
-		inputStream.close();
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
-	checkAndReadFile();
-	writeDataToOutput();
-	System.out.println(averagePower);
-	return averagePower;
-}
-
-public void addPower(String power) {
-	averagePower = Integer.parseInt(power);
-	checkAndReadFile();
-	writeDataToOutput();
-
-}
 
 
 }
