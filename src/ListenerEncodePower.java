@@ -4,18 +4,17 @@ import com.garmin.fit.Field;
 import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgListener;
 
-
 public class ListenerEncodePower implements MesgListener {
 
 	public enum Fields {
-		   POWER (7, "power"),
-		   HEARTRATE (3, "heart_rate");
+		   POWER (7),
+		   HEARTRATE (3);
 		   private final int fieldNum;
-		   Fields(int fieldNum, String fieldName)
+		   Fields(int fieldNum)
 		   {
 			   this.fieldNum = fieldNum;
 		   }
-	   }
+	}
 	@Override
 	public void onMesg(Mesg mesg) {
 		if (mesg.getNum() == 20)
