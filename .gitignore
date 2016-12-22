@@ -50,3 +50,4 @@ local.properties
 .recommenders/
 /adjusted_TSSadjustedFile.fit
 /adjusted_inFile.fit
+/bin/
